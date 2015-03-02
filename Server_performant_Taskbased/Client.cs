@@ -19,6 +19,9 @@ namespace Server_performant_Taskbased
 
         private readonly Stream networkStream;
 
+        public CancellationTokenSource cancellationTokenSourceForAsyncRead = new CancellationTokenSource();
+        public CancellationToken cancellationTokenForAsyncRead;
+
        // private readonly Stream memoryStream = new MemoryStream();
 
        // private readonly TextReader streamReader;
@@ -28,47 +31,92 @@ namespace Server_performant_Taskbased
             this.socket = socket;
             this.doDisconnect = doDisconnect; 
             Task.Factory.StartNew(this.CheckForConnection);
+            cancellationTokenForAsyncRead = cancellationTokenSourceForAsyncRead.Token;
+            this.cancellationTokenForAsyncRead.Register(RegisteredActionOfcancellationTokenForAsyncRead );
+
             this.networkStream = new NetworkStream(this.socket, true);
+          
+
           //  this.streamReader = new StreamReader(this.memoryStream);
+            
+            //this.socket.Blocking          // 		Blocking	true	bool
+            //this.socket.Connected         // 		Connected	true	bool
+            //this.socket.DontFragment      // 		DontFragment	true	bool
+            //this.socket.IsBound           //		IsBound	true	bool
+
+            //ReceiveBufferSize	8192	int
+            //ReceiveTimeout	0	int
+            //SendBufferSize	8192	int
+            //SendTimeout	0	int
+            //this.socket.NoDelay           //		NoDelay	false	bool
+            //this.socket.ProtocolType      //		ProtocolType	Tcp	System.Net.Sockets.ProtocolType
+            //this.socket.SocketType       // 	    SocketType	Stream	System.Net.Sockets.SocketType
+            //this.socket.Ttl              //		Ttl	128	short
+
+            //this.socket.DualMode          // +		DualMode	'socket.DualMode' threw an exception of type 'System.NotSupportedException'	bool {System.NotSupportedException}
+                                            //		Message	"This protocol version is not supported."	string
+            //this.socket.EnableBroadcast   //-		EnableBroadcast	'socket.EnableBroadcast' threw an exception of type 'System.Net.Sockets.SocketException'	bool {System.Net.Sockets.SocketException}
+                                            // 		Message	"An unknown, invalid, or unsupported option or level was specified in a getsockopt or setsockopt call"	string
+            //-		LingerState	{System.Net.Sockets.LingerOption}	System.Net.Sockets.LingerOption
+            //+		MulticastLoopback	'socket.MulticastLoopback' threw an exception of type 'System.Net.Sockets.SocketException'	bool {System.Net.Sockets.SocketException}
+
+            //this.socket.Poll(1, SelectMode.SelectError)
+            //this.socket.SetIPProtectionLevel( IPProtectionLevel.Unrestricted);
             
             //this.networkStream.ReadAsync()
             //this.networkStream.WriteAsync()
+            //this.networkStream.FlushAsync()
+            //this.socket.DisconnectAsync
+            
+            //this.socket.SendPacketsAsync
+            //this.socket.SendToAsync()
 
-             //this.socket.BeginReceive()
-             //this.socket.BeginSend()
-             //this.socket.Blocking
-             //this.socket.DontFragment
-             //this.socket.EnableBroadcast
-             //this.socket.DisconnectAsync
-             //this.socket.EndReceive
-             //this.socket.EndSend
-             //this.socket.NoDelay
-             //this.socket.Poll(1, SelectMode.SelectError)
-             //this.socket.SendPacketsAsync
-             //this.socket.SendToAsync()
-             //this.socket.SetIPProtectionLevel( IPProtectionLevel.Unrestricted);
-             //this.socket.Ttl
+            
+
             
         }
 
+        Action RegisteredActionOfcancellationTokenForAsyncRead =
+        () =>
+            Console.WriteLine("ActionOfcancellationTokenForAsyncRead !" );
+
         public void Dispose()
         {
+            cancellationTokenSourceForAsyncRead.CancelAfter(0);
+
            // this.streamReader.Dispose();
-            this.networkStream.Dispose();
-            this.socket.Dispose();
+            if (this.networkStream!=null)
+            {
+                this.networkStream.Dispose(); 
+            }
+            //this.cancellationTokenSourceForAsyncRead.Dispose();
+            if (this.socket!=null)
+            {
+                this.socket.Dispose(); 
+            }
            // this.memoryStream.Dispose();
         }
 
-        public async void Do()
+        public async void Do_ReadAsync()
         {
-             try
-            {
-                 // listen to read :
-            var buffer = new byte[4096];
-            var bytesRead = await this.networkStream.ReadAsync(buffer, 0, buffer.Length);
-            var str = System.Text.Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-            Console.WriteLine("Received nr of bytes : " + bytesRead.ToString() + ", " + str );
+               // listen to read :
+            while (cancellationTokenForAsyncRead.IsCancellationRequested != true) // If you don't call ReadAsync on the stream repeatedly, as long as the underlying TCP connection is open it will continue receiving data into the buffer, but your program cannot get them.
+                {
+                     try
+                    {
+                        var buffer = new byte[4096];
+                        var bytesRead = await this.networkStream.ReadAsync(buffer, 0, buffer.Length, cancellationTokenForAsyncRead);
+                        if (bytesRead != 0 && this.networkStream != null && cancellationTokenForAsyncRead.IsCancellationRequested != true)
+                        {
+                            var str = System.Text.Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                            Console.WriteLine("Received nr of bytes : " + bytesRead.ToString() + ", " + str); 
+                        }
+                    }
+                     catch (Exception exc_streamWrite)
+                     {
+                         Console.WriteLine("networkStream.ReadAsync or WriteAsync ERROR !, : " + exc_streamWrite.Message);
+                     }
+                }
             //Console.WriteLine("Doing some awesome work that takes a few seconds.");
             ////Thread.Sleep(1000);
             //Console.WriteLine("Finished doing work.");
@@ -76,11 +124,7 @@ namespace Server_performant_Taskbased
             //// response :
             //    await this.networkStream.WriteAsync(buffer, 0, bytesRead);
             //    await this.networkStream.FlushAsync();
-            }
-            catch (Exception exc_streamWrite)
-            {
-                Console.WriteLine("networkStream.ReadAsync or WriteAsync ERROR !, : " + exc_streamWrite.Message);
-            }
+            
         }
 
         private void CheckForConnection()

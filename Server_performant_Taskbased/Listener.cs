@@ -21,7 +21,10 @@ namespace Server_performant_Taskbased
             this.port = port;
             this.tcpListener = new TcpListener(IPAddress.Any, this.port);
             this.tcpListener.Start();
-             // this.tcpListener.BeginAcceptSocket()
+                //this.tcpListener.AllowNatTraversal(bool allowed);
+                //bool this.tcpListener.Pending();
+                //this.tcpListener.Server
+                //this.tcpListener.Stop();
             Task.Factory.StartNew(this.ListenLoop);
         }
 
@@ -61,7 +64,7 @@ namespace Server_performant_Taskbased
                String _ssocketIPEndPoint = "?";
                if (_socketIPEndPoint != null){ _ssocketIPEndPoint = _socketIPEndPoint.Address.ToString() + ":" + _socketIPEndPoint.Port.ToString(); }
                 Console.WriteLine("Client Connected :) data received: "+socket.Available.ToString() +", Remote address: "+_ssocketIPEndPoint);
-                await Task.Factory.StartNew(client.Do);
+                await Task.Factory.StartNew(client.Do_ReadAsync);
             }
         }
 

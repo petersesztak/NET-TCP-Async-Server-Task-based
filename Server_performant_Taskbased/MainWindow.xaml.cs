@@ -43,5 +43,14 @@ namespace Server_performant_Taskbased
                 listener.clients[i].SendMessage("common mesage from server... "+DateTime.Now.ToString());
             }
         }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < listener.clients.Count; i++)
+            {
+                listener.clients[i].cancellationTokenSourceForAsyncRead.CancelAfter(0);
+            }
+
+        }
     }
 }
