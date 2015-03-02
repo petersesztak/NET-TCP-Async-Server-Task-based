@@ -29,6 +29,8 @@ namespace Server_performant_Taskbased
         public Client(Socket socket, ClientDisconnectedDelegate doDisconnect)
         {
             this.socket = socket;
+            
+
             this.doDisconnect = doDisconnect; 
             Task.Factory.StartNew(this.CheckForConnection);
             cancellationTokenForAsyncRead = cancellationTokenSourceForAsyncRead.Token;
@@ -48,16 +50,19 @@ namespace Server_performant_Taskbased
             //ReceiveTimeout	0	int
             //SendBufferSize	8192	int
             //SendTimeout	0	int
-            //this.socket.NoDelay           //		NoDelay	false	bool
+            //this.socket.NoDelay           //		NoDelay	false	bool // Nagle Algorithm
             //this.socket.ProtocolType      //		ProtocolType	Tcp	System.Net.Sockets.ProtocolType
             //this.socket.SocketType       // 	    SocketType	Stream	System.Net.Sockets.SocketType
-            //this.socket.Ttl              //		Ttl	128	short
+            //this.socket.Ttl              //		Ttl	128	short // Time To Live (TTL). e.g. 128 router hops.
 
             //this.socket.DualMode          // +		DualMode	'socket.DualMode' threw an exception of type 'System.NotSupportedException'	bool {System.NotSupportedException}
                                             //		Message	"This protocol version is not supported."	string
             //this.socket.EnableBroadcast   //-		EnableBroadcast	'socket.EnableBroadcast' threw an exception of type 'System.Net.Sockets.SocketException'	bool {System.Net.Sockets.SocketException}
                                             // 		Message	"An unknown, invalid, or unsupported option or level was specified in a getsockopt or setsockopt call"	string
-            //-		LingerState	{System.Net.Sockets.LingerOption}	System.Net.Sockets.LingerOption
+            //-		LingerState	{System.Net.Sockets.LingerOption}	System.Net.Sockets.LingerOption // Socket will delay closing a socket in an attempt to send all pending data
+                                   		    // Enabled	false	bool
+		                                    // LingerTime	0	int
+
             //+		MulticastLoopback	'socket.MulticastLoopback' threw an exception of type 'System.Net.Sockets.SocketException'	bool {System.Net.Sockets.SocketException}
 
             //this.socket.Poll(1, SelectMode.SelectError)
@@ -114,7 +119,7 @@ namespace Server_performant_Taskbased
                     }
                      catch (Exception exc_streamWrite)
                      {
-                         Console.WriteLine("networkStream.ReadAsync or WriteAsync ERROR !, : " + exc_streamWrite.Message);
+                         Console.WriteLine("networkStream.WriteAsync ERROR !, : " + exc_streamWrite.Message);
                      }
                 }
             //Console.WriteLine("Doing some awesome work that takes a few seconds.");
@@ -137,9 +142,10 @@ namespace Server_performant_Taskbased
                 {
                     isDisconnected = this.socket.Poll(1, SelectMode.SelectRead) && (this.socket.Available == 0);
                 }
-                catch (SocketException)
+                catch (SocketException socketExc)
                 {
                     isDisconnected = true;
+                    Console.WriteLine("SocketException ERROR during determinate socket status !, : " + socketExc.Message);
                 }
 
                 if (isDisconnected && (this.doDisconnect != null))
