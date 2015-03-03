@@ -96,6 +96,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Test.proto" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -103,7 +104,13 @@
   <ItemGroup>
     <Resource Include="Readme.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>C:\Users\Peter\Downloads\protobuf-net_r668\ProtoGen\protogen.exe "-i:C:\VS2013solutions\Server_performant_Taskbased\Server_performant_Taskbased\Test.proto" "-o:C:\VS2013solutions\Server_performant_Taskbased\Server_performant_Taskbased\Test.cs"</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
