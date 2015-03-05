@@ -180,5 +180,19 @@ namespace Server_performant_Taskbased
             }
         }
 
+        public async void SendByteArrayMessage(byte[] buffer)
+        {
+            try
+            {
+                await this.networkStream.WriteAsync(buffer, 0, buffer.Length);
+                await this.networkStream.FlushAsync();
+                Console.WriteLine("Message byte[] buffer sent to client");
+            }
+            catch (Exception exc_streamWrite)
+            {
+                Console.WriteLine("networkStream byte[] buffer WriteAsync ERROR !, : " + exc_streamWrite.Message);
+            }
+        }
+
     }
 }

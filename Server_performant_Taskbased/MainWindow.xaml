@@ -6,6 +6,7 @@
         <Button x:Name="button_StartServer" Content="Start multi - client server" HorizontalAlignment="Left" VerticalAlignment="Top" Width="153" Margin="10,10,0,0" Click="Button_Click"/>
         <Button Content="send message to all clients" HorizontalAlignment="Left" Margin="180,10,0,0" VerticalAlignment="Top" Width="169" Click="Button_Click_1"/>
         <Button Content="cancel AsyncRead() await listening on all clients" HorizontalAlignment="Left" Margin="180,37,0,0" VerticalAlignment="Top" Width="276" Click="Button_Click_2"/>
+        <Button Content="send sample person instance to all clients" HorizontalAlignment="Left" Margin="180,64,0,0" VerticalAlignment="Top" Width="276" Click="Button_Click_3"/>
 
     </Grid>
 </Window>

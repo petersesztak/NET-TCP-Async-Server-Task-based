@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,6 +52,22 @@ namespace Server_performant_Taskbased
                 listener.clients[i].cancellationTokenSourceForAsyncRead.CancelAfter(0);
             }
 
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            Person.Person person = new Person.Person();
+            person.email = "peter.sesztak@gmail.com";
+            person.id = 789;
+            person.name = "Seszták Péter";
+
+            MemoryStream ms = new MemoryStream();
+            ProtoBuf.Serializer.Serialize(ms, person);
+            byte[] buffer = ms.ToArray();
+            for (int i = 0; i < listener.clients.Count; i++)
+            {
+                   listener.clients[i].SendByteArrayMessage(buffer);
+            }
         }
     }
 }
