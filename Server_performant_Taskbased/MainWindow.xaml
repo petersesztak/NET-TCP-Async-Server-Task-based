@@ -1,12 +1,13 @@
 ﻿<Window x:Class="Server_performant_Taskbased.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="NET-TCP-Async-Server-Task-based" Height="350" Width="525">
+        Title="NET-TCP-Async-Server-Task-based" Height="350" Width="739.925">
     <Grid>
         <Button x:Name="button_StartServer" Content="Start multi - client server" HorizontalAlignment="Left" VerticalAlignment="Top" Width="153" Margin="10,10,0,0" Click="Button_Click"/>
         <Button Content="send message to all clients" HorizontalAlignment="Left" Margin="180,10,0,0" VerticalAlignment="Top" Width="169" Click="Button_Click_1"/>
         <Button Content="cancel AsyncRead() await listening on all clients" HorizontalAlignment="Left" Margin="180,37,0,0" VerticalAlignment="Top" Width="276" Click="Button_Click_2"/>
         <Button Content="send sample person instance to all clients" HorizontalAlignment="Left" Margin="180,64,0,0" VerticalAlignment="Top" Width="276" Click="Button_Click_3"/>
+        <Button Content="Check listening (Activate) state ?" HorizontalAlignment="Left" Margin="461,37,0,0" VerticalAlignment="Top" Width="191" Click="Button_Click_4"/>
 
     </Grid>
 </Window>

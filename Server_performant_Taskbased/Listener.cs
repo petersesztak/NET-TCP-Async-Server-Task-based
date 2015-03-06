@@ -12,15 +12,20 @@ namespace Server_performant_Taskbased
     {
         private readonly int port;
 
-        private readonly TcpListener tcpListener;
+        public TcpListenerEx tcpListener;
 
        public IList<Client> clients = new List<Client>();
 
         public Listener(int port)
         {
             this.port = port;
-            this.tcpListener = new TcpListener(IPAddress.Any, this.port);
-            this.tcpListener.Start();
+            if (this.tcpListener == null)
+            {
+                this.tcpListener = new TcpListenerEx(IPAddress.Any, this.port);
+            }
+                this.tcpListener.Start(); 
+           
+            
                 //this.tcpListener.AllowNatTraversal(bool allowed);
                 //bool this.tcpListener.Pending();
                 //this.tcpListener.Server
